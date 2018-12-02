@@ -50,7 +50,7 @@ public class HuffProcessor {
 		writeTree(tree, out);
 		in.reset();
 		writeCompressedBits(encodings, in, out);
-		
+
 		out.close();
 	}
 
@@ -129,7 +129,7 @@ public class HuffProcessor {
 		recurse(root.myLeft, path+"0", encodings);
 		recurse(root.myRight, path+"1", encodings);
 	}
-	
+
 	/**
 	 * Helper method for writing the encoding tree to the output file in bits.
 	 * @param root Root of the encoding tree.
@@ -138,15 +138,15 @@ public class HuffProcessor {
 	private void writeTree(HuffNode root, BitOutputStream out)
 	{
 		HuffNode node = root;
-		
-		
+
+
 		if (node.myLeft == null && node.myRight == null)
 		{
 			out.writeBits(1, 1);
 			out.writeBits(BITS_PER_WORD+1, node.myValue);
 			return;
 		}
-		
+
 		out.writeBits(1, 0);
 		writeTree(root.myLeft, out);
 		writeTree(root.myRight, out);
@@ -169,19 +169,19 @@ public class HuffProcessor {
 				out.writeBits(encodings[PSEUDO_EOF].length(), Integer.parseInt(encodings[PSEUDO_EOF], 2));
 				return;
 			}
-			
+
 			out.writeBits(encodings[bit].length(), Integer.parseInt(encodings[bit], 2));
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
 	/**
 	 * Decompresses a file. Output file must be identical bit-by-bit to the
 	 * original.
@@ -191,19 +191,20 @@ public class HuffProcessor {
 	 * @param out
 	 *            Buffered bit stream writing to the output file.
 	 */
-	public void decompress(BitInputStream in, BitOutputStream out){
+	public void decompress(BitInputStream in, BitOutputStream out)
+	{
 
-		while (true){
-			int val = in.readBits(BITS_PER_INT);
-			if (val != HUFF_TREE)
-				throw new HuffException("illegal header starts with " + val);
+		int val = in.readBits(BITS_PER_INT);
+		if (val != HUFF_TREE)
+			throw new HuffException("illegal header starts with " + val);
 
-			HuffNode tree = getTree(in);
+		HuffNode tree = getTree(in);
+		
 
-			readCompressedBits(tree, in, out);
+		readCompressedBits(tree, in, out);
 
-			out.close();
-		}
+		out.close();
+
 	}
 
 	/**
@@ -226,6 +227,7 @@ public class HuffProcessor {
 		else 
 		{
 			int value = in.readBits(BITS_PER_WORD+1);
+			System.out.println(value);
 			return new HuffNode(value,0,null,null);
 		}
 
@@ -261,7 +263,7 @@ public class HuffProcessor {
 						break;   // out of loop
 					else
 					{
-						out.writeBits(BITS_PER_WORD+1, current.myValue);
+						out.writeBits(BITS_PER_WORD, current.myValue);
 						current = root; // start back after leaf
 					}
 				}
